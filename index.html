@@ -554,6 +554,7 @@
             margin: 0;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            justify-content: center;
             gap: 1.75rem;
         }
 
@@ -567,6 +568,8 @@
             border: 1px solid rgba(0, 168, 168, 0.25);
             transition: transform 0.3s, box-shadow 0.3s, background 0.3s, border-color 0.3s;
             min-height: 160px;
+            max-width: 360px;
+            margin: 0 auto;
         }
 
         .limitations-item:hover {
@@ -923,7 +926,9 @@
                 </div>
             </div>
             <div class="team-card">
-                <div class="team-photo">👩‍💻</div>
+                <div class="team-photo">
+                    <img src="images/taline.jpeg" alt="Taline Chehade">
+                </div>
                 <div class="team-info">
                     <div class="team-name">Taline Chehade</div>
                     <div class="team-role">Computer Science Engineering</div>
@@ -939,7 +944,6 @@
         <p class="subtitle" style="color: rgba(255,255,255,0.8);">Learn more about our project or collaborate with us</p>
         <div class="contact-links">
             <a href="#" class="contact-link">📧 Contact Us</a>
-            <a href="#" class="contact-link">📄 Read Our Paper</a>
         </div>
         <p style="margin-top: 3rem; opacity: 0.7;">American University of Beirut | Final Year Project 2025-2026</p>
     </section>
