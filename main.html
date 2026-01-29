@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardio Health - AI-Enabled AF Detection</title>
+    <meta name="description" content="Revolutionizing atrial fibrillation detection through accessible, AI-powered cardiac monitoring">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:wght@500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #0066cc;
+            --secondary-teal: #00a8a8;
+            --accent-coral: #ff6b6b;
+            --dark-navy: #1a2332;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+        }
+
+        body {
+            font-family: 'Source Sans 3', system-ui, sans-serif;
+            line-height: 1.75;
+            font-size: 16px;
+            color: var(--text-dark);
+        }
+
+        /* ===== Academic / Medical Typography ===== */
+
+        h1, h2, h3 {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        p, li, span {
+            font-weight: 400;
+        }
+
+
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 35, 50, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        nav .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+}
+
+        nav .logo img {
+            height: 40px;        /* balanced with text */
+            width: auto;
+            display: block;
+        }
+
+        nav .logo-text {
+            font-family: 'Source Serif 4', serif;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+
+
+
+        /* subtle hover polish */
+        nav .logo:hover .logo-text {
+            color: var(--secondary-teal);
+        }
+
+
+
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: var(--secondary-teal);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--dark-navy) 0%, var(--primary-blue) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
+            animation: ecgGrid 20s linear infinite;
+        }
+
+        @keyframes ecgGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        /* ===== ECG ANIMATIONS ===== */
+
+        /* ECG Grid subtle motion */
+        .hero::before {
+            animation: ecgGrid 20s linear infinite;
+        }
+
+        @keyframes ecgGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+
+        /* ECG Line Draw */
+        .ecg-wave {
+            position: absolute;
+            width: 100%;
+            height: 150px;
+            bottom: 10%;
+            left: 0;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        .ecg-line {
+            stroke: var(--secondary-teal);
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            filter: drop-shadow(0 0 6px rgba(0,168,168,0.6));
+            animation: drawECG 4s ease-in-out infinite;
+        }
+
+        @keyframes drawECG {
+            0% { stroke-dashoffset: 2000; opacity: 0; }
+            15% { opacity: 1; }
+            85% { opacity: 1; }
+            100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+
+        /* Scan line */
+        .scan-line {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(0,168,168,0.8), transparent);
+            top: 0;
+            left: 0;
+            animation: scanMove 6s linear infinite;
+            box-shadow: 0 0 10px rgba(0,168,168,0.5);
+        }
+
+        @keyframes scanMove {
+            0% { left: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+
+        .pulse-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--secondary-teal);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--secondary-teal);
+            animation: pulseDot 3s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 0; transform: scale(.5); }
+            50% { opacity: 1; transform: scale(1.6); }
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.1rem;
+            color: var(--white);
+            margin-bottom: 1rem;
+            letter-spacing: -0.6px;
+        }
+
+
+        .hero .tagline {
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: var(--secondary-teal);
+        }
+
+
+        .hero .description {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--accent-coral);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 107, 107, 0.6);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 5rem 2rem;
+        }
+
+        section:not(.hero):not(.contact) {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        section.contact {
+            max-width: 100%;
+            margin: 0;
+        }
+
+
+
+        section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-navy);
+            text-align: center;
+        }
+
+        section .subtitle {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Mission Section */
+        .mission {
+            background: var(--light-bg);
+        }
+
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .mission-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .mission-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .mission-card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        /* Problem Section */
+        .problem {
+            background: var(--white);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-teal));
+            border-radius: 15px;
+            color: var(--white);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.05);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Solution Section */
+        .solution {
+            background: var(--light-bg);
+        }
+
+        .solution-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 4px solid var(--secondary-teal);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--secondary-teal);
+            color: var(--white);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        /* Technology Section */
+        .technology {
+            background: var(--white);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .tech-card {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .tech-card:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+            transform: translateY(-5px);
+        }
+
+        .tech-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Team Section */
+        .team {
+            background: var(--light-bg);
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .team-card {
+            background: var(--white);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .team-photo {
+            width: 100%;
+            height: 280px;
+            overflow: hidden;
+            background: #eaeaea; /* fallback if image missing */
+        }
+
+        .team-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+        .team-info {
+            padding: 1.5rem;
+        }
+
+        .team-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark-navy);
+            margin-bottom: 0.5rem;
+        }
+
+        .team-role {
+            color: var(--secondary-teal);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-description {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Impact Section */
+        .impact {
+            background: var(--white);
+        }
+
+        .impact-list {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .impact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--light-bg);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-coral);
+        }
+
+        .impact-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        /* Current Limitations */
+        .limitations-card {
+            margin-top: 3rem;
+            padding: 3.5rem;
+            background: var(--white);
+            border-radius: 12px;
+            border: 1px solid rgba(26, 35, 50, 0.08);
+            box-shadow: 0 6px 20px rgba(26, 35, 50, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .limitations-card h3 {
+            color: var(--dark-navy);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            letter-spacing: -0.2px;
+            text-align: center;
+        }
+
+        .limitations-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .limitations-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 2.2rem 2rem;
+            background: linear-gradient(135deg, rgba(0,102,204,0.10), rgba(0,168,168,0.14));
+            border-radius: 10px;
+            border: 1px solid rgba(0, 168, 168, 0.25);
+            transition: transform 0.3s, box-shadow 0.3s, background 0.3s, border-color 0.3s;
+            min-height: 160px;
+        }
+
+        .limitations-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0, 102, 204, 0.18);
+            border-color: rgba(0, 102, 204, 0.4);
+            background: linear-gradient(135deg, rgba(0,102,204,0.18), rgba(0,168,168,0.18));
+        }
+
+        .limitations-text {
+            color: var(--dark-navy);
+            font-size: 1.05rem;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: var(--dark-navy);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .contact h2 {
+            color: var(--white);
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--primary-blue);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .contact-link:hover {
+            background: var(--secondary-teal);
+            transform: translateY(-2px);
+        }
+
+        section.contact {
+            max-width: 100%;
+            margin: 0;
+            padding: 5rem 0;   /* remove side padding */
+            width: 100%;
+        }
+
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent-coral);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 999;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero .tagline {
+                font-size: 1.2rem;
+            }
+
+            .hero .description {
+                font-size: 1rem;
+            }
+
+            section h2 {
+                font-size: 2rem;
+            }
+
+            section {
+                padding: 3rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">
+            <img src="images/logo.png" alt="Cardio Health Logo">
+            <span class="logo-text">CardioHealth</span>
+        </div>
+            <ul>
+                <li><a href="#mission">Mission</a></li>
+                <li><a href="#problem">Problem</a></li>
+                <li><a href="#solution">Solution</a></li>
+                <li><a href="#technology">Technology</a></li>
+                <li><a href="#team">Team</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <svg class="ecg-wave" viewBox="0 0 1200 150" preserveAspectRatio="none">
+            <path class="ecg-line"
+                d="M0,75 L200,75 L225,45 L230,75 L235,120 L240,75 L250,75 
+                   L400,75 L425,45 L430,75 L435,120 L440,75 L450,75
+                   L600,75 L625,45 L630,75 L635,120 L640,75 L650,75
+                   L800,75 L825,45 L830,75 L835,120 L840,75 L850,75
+                   L1000,75 L1025,45 L1030,75 L1035,120 L1040,75 L1200,75"/>
+        </svg>
+
+        <div class="scan-line"></div>
+        <div class="pulse-dot" style="left:30%; top:40%;"></div>
+        <div class="pulse-dot" style="left:55%; top:28%; animation-delay: .6s;"></div>
+        <div class="pulse-dot" style="left:70%; top:60%; animation-delay: 1.1s;"></div>
+        <div class="pulse-dot" style="left:15%; top:65%; animation-delay: .9s;"></div>
+        <div class="pulse-dot" style="left:85%; top:42%; animation-delay: 1.4s;"></div>
+
+        <div class="hero-content">
+            <h1>CardioHealth</h1>
+            <p class="tagline">AI-Enabled Disease Signature on ECG: What the Naked Eye Cannot See</p>
+            <p class="description">Revolutionizing atrial fibrillation detection through accessible, AI-powered cardiac monitoring with explainable intelligence</p>
+        </div>
+    </section>
+
+
+    
+
+    <!-- Mission Section -->
+    <section id="mission" class="mission">
+        <h2>Our Mission</h2>
+        <p class="subtitle">Extending early, reliable AF detection beyond hospital settings through portable ECG monitoring combined with explainable AI</p>
+        <div class="mission-grid">
+            <div class="mission-card">
+                <h3>🏥 Accessibility</h3>
+                <p>Enable reliable AF screening in non-hospital settings using portable, medical-grade ECG devices</p>
+            </div>
+            <div class="mission-card">
+                <h3>🤖 Automation</h3>
+                <p>Reduce reliance on manual ECG interpretation through AI-driven analysis that recognizes AF patterns automatically</p>
+            </div>
+            <div class="mission-card">
+                <h3>💰 Affordability</h3>
+                <p>Provide an economical solution that maintains medical-grade precision while reducing costs</p>
+            </div>
+            <div class="mission-card">
+                <h3>📊 Continuous Monitoring</h3>
+                <p>Allow long-term cardiac data collection, overcoming limitations of brief ECG examinations</p>
+            </div>
+            <div class="mission-card">
+                <h3>🌐 Bilingual Support</h3>
+                <p>Deliver results through English-Arabic interface for both healthcare professionals and patients</p>
+            </div>
+            <div class="mission-card">
+                <h3>🔍 Interpretability</h3>
+                <p>Provide explainable AI outputs that clinicians can understand and trust</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section id="problem" class="problem">
+        <h2>The Challenge</h2>
+        <p class="subtitle">Atrial fibrillation is a silent epidemic with devastating consequences</p>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">59M+</span>
+                <span>People affected worldwide</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">5x</span>
+                <span>Increased stroke risk</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">20%</span>
+                <span>Of all strokes caused by AF</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">Often</span>
+                <span>Undiagnosed until complications</span>
+            </div>
+        </div>
+        <div class="limitations-card">
+            <h3>Limitations in Existing Solutions</h3>
+            <ul class="limitations-list">
+                <li class="limitations-item">
+                    <span class="limitations-text">Manual ECG interpretation is time-intensive and subject to inter-reader variability</span>
+                </li>
+                <li class="limitations-item">
+                    <span class="limitations-text">Short recording windows reduce detection of intermittent AF episodes</span>
+                </li>
+                <li class="limitations-item">
+                    <span class="limitations-text">Limited access to specialist cardiology services in remote or underserved regions</span>
+                </li>
+                <li class="limitations-item">
+                    <span class="limitations-text">Delayed detection reduces opportunities for preventive intervention</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section id="solution" class="solution">
+        <h2>Our Solution</h2>
+        <p class="subtitle">A three-stage AI-powered pipeline combining portable devices with explainable intelligence</p>
+        <div class="solution-steps">
+            <div class="step-card">
+                <span class="step-number">1</span>
+                <h3>ECG Acquisition</h3>
+                <p>Portable ECG data collection using the Bittium Faros 360 device (FDA 510(k) and CE Class IIa approved) for continuous, medical-grade cardiac monitoring</p>
+            </div>
+            <div class="step-card">
+                <span class="step-number">2</span>
+                <h3>Signal Processing</h3>
+                <p>ECG waveforms converted into standardized 2D images through sophisticated preprocessing pipelines, creating consistent input for AI analysis</p>
+            </div>
+            <div class="step-card">
+                <span class="step-number">3</span>
+                <h3>AI Classification</h3>
+                <p>Fine-tuned LLaMA 3.2-11B vision-language model analyzes ECG images and generates both AF predictions and clinical explanations in natural language</p>
+            </div>
+        </div>
+        <div style="margin-top: 3rem; padding: 2rem; background: var(--white); border-radius: 15px; text-align: center;">
+            <h3 style="color: var(--primary-blue); margin-bottom: 1rem;">Key Innovation</h3>
+            <p style="font-size: 1.1rem; color: var(--text-dark);">Unlike black-box AI systems, our model provides <strong>explainable reasoning</strong> that aligns with clinical ECG criteria, helping clinicians understand <em>why</em> AF was detected</p>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section id="technology" class="technology">
+        <h2>Technology Stack</h2>
+        <p class="subtitle">Built on cutting-edge AI and clinically validated medical devices</p>
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-icon">🔬</div>
+                <h3>Bittium Faros 360</h3>
+                <p>Medical-grade portable ECG with FDA 510(k) & CE Class IIa certification</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon">🧠</div>
+                <h3>LLaMA 3.2-11B</h3>
+                <p>Vision-language model fine-tuned with LoRA for ECG interpretation</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon">📊</div>
+                <h3>MEETI & MIMIC-IV</h3>
+                <p>Training on validated clinical ECG datasets with expert annotations</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon">🔒</div>
+                <h3>GDPR/HIPAA</h3>
+                <p>Compliant data handling with ISO 27001 security standards</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon">🌍</div>
+                <h3>Bilingual Interface</h3>
+                <p>English-Arabic application for diverse healthcare settings</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon">⚡</div>
+                <h3>Real-time Analysis</h3>
+                <p>Fast inference for immediate clinical decision support</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team" class="team">
+        <h2>Meet Our Team</h2>
+        <p class="subtitle">Interdisciplinary expertise in AI, cardiology, and medical device integration</p>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-photo">
+                    <img src="images/mariette.jpeg" alt="Mariette Awad">
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Prof. Mariette Awad</div>
+                    <div class="team-role">Project Advisor</div>
+                    <div class="team-description">Leading AI research and guiding the technical vision of the project</div>
+                </div>
+            </div>
+            
+            <div class="team-card">
+                <div class="team-photo">👩‍🔬</div>
+                <div class="team-info">
+                    <div class="team-name">Chaymaa Abbas</div>
+                    <div class="team-role">Graduate Researcher</div>
+                    <div class="team-description">ECG signal processing and feature extraction expert</div>
+                </div>
+            </div>
+
+            <div class="team-card">
+                <div class="team-photo">
+                    <img src="images/lama.jpeg" alt="Lama Mawlawi">
+                </div>
+
+                <div class="team-info">
+                    <div class="team-name">Lama Mawlawi</div>
+                    <div class="team-role">Graduate Researcher</div>
+                    <div class="team-description">Clinical validation and medical device integration specialist</div>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-photo">
+                    <img src="images/nour.jpeg" alt="Nour Shammaa">
+                </div>
+                <div class="team-info">
+                    <div class="team-name">Nour Shammaa</div>
+                    <div class="team-role">Computer & Communications Engineering</div>
+                    <div class="team-description">AI model development and fine-tuning specialist</div>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-photo">
+                    <img src="images/riwa.jpeg" alt="Riwa El Kari">
+                </div>
+
+                <div class="team-info">
+                    <div class="team-name">Riwa El Kari</div>
+                    <div class="team-role">Computer & Communications Engineering</div>
+                    <div class="team-description">Backend architecture and system integration lead</div>
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-photo">👩‍💻</div>
+                <div class="team-info">
+                    <div class="team-name">Taline Chehade</div>
+                    <div class="team-role">Computer Science Engineering</div>
+                    <div class="team-description">UI/UX design and frontend development specialist</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2>Get In Touch</h2>
+        <p class="subtitle" style="color: rgba(255,255,255,0.8);">Learn more about our project or collaborate with us</p>
+        <div class="contact-links">
+            <a href="#" class="contact-link">📧 Contact Us</a>
+            <a href="#" class="contact-link">📄 Read Our Paper</a>
+        </div>
+        <p style="margin-top: 3rem; opacity: 0.7;">American University of Beirut | Final Year Project 2025-2026</p>
+    </section>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Back to top button visibility
+        const backToTopButton = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all cards and sections
+        document.quer
